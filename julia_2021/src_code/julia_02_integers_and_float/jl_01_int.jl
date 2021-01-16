@@ -45,7 +45,8 @@ try
 catch e
     println("ZeroDivisionError", e)
 finally
-    z = 10
+    z = 10d
     println(z)
 end
+
 

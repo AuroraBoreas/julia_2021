@@ -70,11 +70,21 @@ println(x)
 x = eps() # same as eps(Float64)
 println(x)
 
-# The eps function can also take a floating-point value as an argument, 
-# and gives the absolute difference between that value and the next representable floating point value. 
-# That is, 
-# eps(x) yields a value of the same type as x such that x + eps(x)
-# is the next representable floating-point value larger than x
+#=
+[concept] 
+"discrete math"
+
+The distance between two adjacent representable floating-point numbers is not constant, 
+but is smaller for smaller values and larger for larger values. In other words,
+the representable floating-point numbers are densest in the real number line near zero, 
+and grow sparser exponentially as one moves farther away from zero. 
+
+The eps function can also take a floating-point value as an argument, 
+and gives the absolute difference between that value and the next representable floating point value. 
+That is, 
+eps(x) yields a value of the same type as x such that x + eps(x)
+is the next representable floating-point value larger than x
+=#
 
 x1 = 1.0
 x2 = eps(x1)
@@ -82,3 +92,74 @@ println(x2)
 x1 = 1000.
 x2 = eps(x1)
 println(x2)
+
+# nextfloat and prevfloat
+x3 = 1.25f0
+x4 = nextfloat(x3)
+x5 = prevfloat(x3)
+
+println(bitstring(x5))
+println(bitstring(x3))
+println(bitstring(x4))
+
+# rounding modes
+x6 = round(x3)
+println(x6)
+
+# arbitrary precision arithmetic: BigInt, BigFloat types
+# type promotion and conversion mechanism
+
+z1 = BigInt(typemax(Int64))+1
+z2 = big"123456789012345678901234567890" + 1
+z3 = parse(BigInt, "123456789012345678901234567890") + 1
+z4 = big"1.23456789012345678901"
+z5 = parse(BigFloat, "1.23456789012345678901")
+z6 = BigFloat(2.0^66) / 3
+z7 = factorial(BigInt(40))
+println(z7)
+
+# but, type promotion btwn primitive types above and BigInt/BigFloat is NOT automatic
+# and must be explicitlly stated
+
+a1 = typemin(Int64)
+a1 = a1 - 1
+typeof(x)   # Int64
+
+b1 = BigInt(typemin(Int64))
+b1 = b1 - 1
+typeof(b1)  # BigInt
+
+# globally change rounding mode and precision of BigFloat type is supported
+setrounding(BigFloat, RoundUp) do
+    BigFloat(1) + parse(BigFloat, "0.1")
+end
+
+setrounding(BigFloat, RoundDown) do
+    BigFloat(1) + parse(BigFloat, "0.1")
+end
+
+setprecision(40) do
+    BigFloat(1) + parse(BigFloat, "0.1")
+end
+
+# numeric literal coefficients
+
+c = 3
+2c^2 - 3c + 1
+1.5c^2 - .5x + 1
+2^2c
+
+# but prefer parenthesises
+2(c-1)^2 - 3(c-1) + 1
+
+(c-1)c
+
+# following forms are not supported
+# (x-1)(x+1) # not OK
+# c(c+1) # not OK
+
+# literal zero and one
+d = 42
+zero(d)
+one(d)
+
